@@ -1,0 +1,21 @@
+import Foundation
+
+// MARK: - Business logic
+
+protocol MainScreenBusinessLogic {
+    typealias Model = MainScreenModel
+    
+    func loadStart(_ request: Model.Start.Request)
+    
+    func loadChangeColor(_ request: Model.ChangeColor.Request)
+}
+
+// MARK: - Presentation logic
+
+protocol MainScreenPresentationLogic {
+    typealias Model = MainScreenModel
+    
+    func presentStart(_ response: Model.Start.Response)
+    
+    func presentChangeColor(_ response: Model.ChangeColor.Response)
+}
