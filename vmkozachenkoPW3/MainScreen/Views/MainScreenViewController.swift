@@ -21,6 +21,21 @@ final class MainScreenViewController: UIViewController {
         static let sliderLeading: CGFloat = 20
         static let sliderTop: CGFloat = 30
         
+        static let textFieldPlaceholder = "Write hex color"
+        static let textFieldLeading : CGFloat = 50
+        static let textFieldHeigh: CGFloat = 40
+        
+        static let randomButtonTitle = "Random"
+        static let randomButtonLeading : CGFloat = 100
+        static let randomButtonHeight : CGFloat = 40
+        
+        static let segmentedControlFirst = "Slider"
+        static let segmentedControlSecond = "HEX"
+        static let segmentedControlThird = "Random"
+        static let segmentedControlLeading : CGFloat = 30
+        static let segmentedControlBottom : CGFloat = -50
+        static let segmetedControlSelectedSegmentIndex = 0
+        
         static let maxColorVal: CGFloat = 255
         
         static let alphaValue: CGFloat = 1
@@ -33,10 +48,12 @@ final class MainScreenViewController: UIViewController {
     let mainTitle: UILabel = UILabel()
     let mainDescription: UILabel = UILabel()
     
+    let segmentedControl = UISegmentedControl()
+    
     // Color controllers
     private let rgbSlider: CustomRGBSlider = CustomRGBSlider()
-//    private let textField: CustomTextField = CustomTextField(placeholder: Constants.textFieldPlaceholder)
-//    private let randomButton: UIButton = UIButton(type: .system)
+    private let textField: CustomTextField = CustomTextField(placeholder: Constants.textFieldPlaceholder)
+    private let randomButton: UIButton = UIButton(type: .system)
     
     // MARK: - Initialisers
     
@@ -56,6 +73,7 @@ final class MainScreenViewController: UIViewController {
         super.viewDidLoad()
         
         interactor.loadStart(Model.Start.Request())
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         configureUI()
     }
     
@@ -65,6 +83,9 @@ final class MainScreenViewController: UIViewController {
         configureTitle()
         configureDescription()
         configureSliders()
+        configureTextField()
+        configureRandomButton()
+        configureSegmentedControl()
     }
     
     // MARK: - Configure Title
@@ -125,6 +146,74 @@ final class MainScreenViewController: UIViewController {
         ])
     }
     
+    // MARK: - Configure Text Field
+    
+    private func configureTextField() {
+        
+        textField.buttonPressed = { [weak self] in
+            guard let self = self else { return }
+            
+            self.dismissKeyboard()
+            
+            let hex = self.textField.getText()
+            self.interactor.loadChangeColor(.textField(hex: hex))
+        }
+        
+        textField.translatesAutoresizingMaskIntoConstraints = false;
+        view.addSubview(textField)
+        NSLayoutConstraint.activate([
+            textField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.textFieldLeading),
+            textField.heightAnchor.constraint(equalToConstant: Constants.textFieldHeigh)
+        ])
+    }
+    
+    // MARK: - Configure random button
+    
+    private func configureRandomButton() {
+        randomButton.addTarget(self, action: #selector(randomButtonTapped), for: .touchDown)
+        randomButton.backgroundColor = .orange
+        randomButton.setTitle(Constants.randomButtonTitle, for: .normal)
+        randomButton.setTitleColor(.white, for: .normal)
+        randomButton.translatesAutoresizingMaskIntoConstraints = false;
+        
+        view.addSubview(randomButton)
+        NSLayoutConstraint.activate([
+            randomButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            randomButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            randomButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Constants.randomButtonLeading),
+            randomButton.heightAnchor.constraint(equalToConstant: Constants.randomButtonHeight)
+            
+        ])
+    }
+    
+    // MARK: - Configure seg control
+    
+    private func configureSegmentedControl() {
+        segmentedControl.backgroundColor = .white
+        segmentedControl.selectedSegmentTintColor = .orange
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
+        segmentedControl.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+        segmentedControl.insertSegment(withTitle: Constants.segmentedControlFirst, at: 0, animated: false)
+        segmentedControl.insertSegment(withTitle: Constants.segmentedControlSecond, at: 1, animated: false)
+        segmentedControl.insertSegment(withTitle: Constants.segmentedControlThird, at: 2, animated: false)
+        
+        
+        segmentedControl.selectedSegmentIndex = Constants.segmetedControlSelectedSegmentIndex
+        interactor.loadChangeColorController(Model.ChangeColorController.Request(index: segmentedControl.selectedSegmentIndex))
+        
+        segmentedControl.addTarget(self, action: #selector(segmentControlTapped), for: .valueChanged)
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false;
+        
+        view.addSubview(segmentedControl)
+        NSLayoutConstraint.activate([
+            segmentedControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.segmentedControlLeading),
+            segmentedControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.segmentedControlBottom)
+        ])
+    }
+    
     // MARK: - Display changes
     
     func displayStart(_ viewModel: Model.Start.ViewModel) {
@@ -135,5 +224,32 @@ final class MainScreenViewController: UIViewController {
     func displayChangeColor(_ viewModel: Model.ChangeColor.ViewModel) {
         rgbSlider.updateSliders(red: viewModel.red, green: viewModel.green, blue: viewModel.blue)
         view.backgroundColor = UIColor(red: viewModel.red, green: viewModel.green, blue: viewModel.blue, alpha: Constants.alphaValue)
+    }
+    
+    func displayChangeColorController(_ viewModel: Model.ChangeColorController.ViewModel) {
+        rgbSlider.isHidden = !viewModel.showSlider
+        textField.isHidden = !viewModel.showTextField
+        randomButton.isHidden = !viewModel.showRandomButton
+    }
+    
+    // MARK: - Random button tapped
+    
+    @objc
+    private func randomButtonTapped() {
+        interactor.loadChangeColor(.randomButton)
+    }
+    
+    // MARK: - Segment control tapped
+    
+    @objc
+    private func segmentControlTapped() {
+        interactor.loadChangeColorController(Model.ChangeColorController.Request(index: segmentedControl.selectedSegmentIndex))
+    }
+    
+    // MARK: - Dismiss Keyboard
+    
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }

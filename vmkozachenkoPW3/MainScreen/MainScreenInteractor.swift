@@ -12,24 +12,35 @@ final class MainScreenInteractor: MainScreenBusinessLogic {
         static let maxValue: CGFloat = 1
     }
     
+    private enum ColorControllerType {
+        case slider
+        case textField
+        case randomButton
+    }
+    
     // MARK: - Fields
     
     private let presenter: MainScreenPresentationLogic
     
     private var colorService: ColorServiceProtocol
     
+    private var colorController: ColorControllerType
+    
     // MARK: - Initialisers
     
     init(presenter: MainScreenPresentationLogic, colorService: ColorServiceProtocol) {
         self.presenter = presenter
         self.colorService = colorService
+        colorController = .slider
     }
     
-    // MARK: Business logic
+    // MARK: Load Start
     
     func loadStart(_ request: Model.Start.Request) {
         presenter.presentStart(Model.Start.Response(color: colorService.color))
     }
+    
+    // MARK: - Load change color
     
     func loadChangeColor(_ request: Model.ChangeColor.Request) {
         switch request {
@@ -47,10 +58,30 @@ final class MainScreenInteractor: MainScreenBusinessLogic {
             colorService.color = ColorModel(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1))
             
         case let .textField(hex):
+            guard ColorModel.validateHEX(hex: hex) else { return }
             // set color
             colorService.color = ColorModel(hex: hex)
         }
         
         presenter.presentChangeColor(Model.ChangeColor.Response(color: colorService.color))
+    }
+    
+    // MARK: - Load change clr controller
+    
+    func loadChangeColorController(_ request: Model.ChangeColorController.Request) {
+        colorController =
+        switch request.index {
+        case 0: .slider
+        case 1: .textField
+        case 2: .randomButton
+        default: .slider
+        }
+        let response: Model.ChangeColorController.Response =
+        switch colorController {
+        case .slider: .slider
+        case .textField: .textField
+        case .randomButton: .randomButton
+        }
+        presenter.presentChangeColorController(response)
     }
 }

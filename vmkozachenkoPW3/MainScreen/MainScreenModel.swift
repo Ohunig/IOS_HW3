@@ -29,4 +29,20 @@ enum MainScreenModel {
             let blue: CGFloat
         }
     }
+    
+    enum ChangeColorController {
+        struct Request {
+            let index: Int
+        }
+        enum Response {
+            case slider
+            case textField
+            case randomButton
+        }
+        struct ViewModel {
+            let showSlider: Bool
+            let showTextField: Bool
+            let showRandomButton: Bool
+        }
+    }
 }
