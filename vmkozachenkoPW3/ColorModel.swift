@@ -12,10 +12,10 @@ struct ColorModel {
     
     // MARK: - Fields
     
-    public var red : CGFloat
-    public var green : CGFloat
-    public var blue : CGFloat
-    public var alpha : CGFloat
+    public let red : CGFloat
+    public let green : CGFloat
+    public let blue : CGFloat
+    public let alpha : CGFloat
     
     // MARK: - Standart constructor
     

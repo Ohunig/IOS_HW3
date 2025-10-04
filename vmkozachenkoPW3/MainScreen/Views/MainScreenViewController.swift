@@ -24,17 +24,25 @@ final class MainScreenViewController: UIViewController {
         static let textFieldPlaceholder = "Write hex color"
         static let textFieldLeading : CGFloat = 50
         static let textFieldHeigh: CGFloat = 40
+        static let textFieldCornerRadius: CGFloat = 8
         
         static let randomButtonTitle = "Random"
-        static let randomButtonLeading : CGFloat = 100
-        static let randomButtonHeight : CGFloat = 40
+        static let randomButtonLeading: CGFloat = 100
+        static let randomButtonHeight: CGFloat = 40
+        static let randomButtonCornerRadius: CGFloat = 8
         
         static let segmentedControlFirst = "Slider"
         static let segmentedControlSecond = "HEX"
         static let segmentedControlThird = "Random"
-        static let segmentedControlLeading : CGFloat = 30
-        static let segmentedControlBottom : CGFloat = -50
+        static let segmentedControlLeading: CGFloat = 30
+        static let segmentedControlTop: CGFloat = 20
         static let segmetedControlSelectedSegmentIndex = 0
+        
+        static let addWishButtonTitle = "Add wish"
+        static let addWishButtonCornerRadius: CGFloat = 8
+        static let addWishButtonHeight: CGFloat = 40
+        static let addWishButtonBottom: CGFloat = -20
+        static let addWishButtonLeading: CGFloat = 60
         
         static let maxColorVal: CGFloat = 255
         
@@ -45,15 +53,17 @@ final class MainScreenViewController: UIViewController {
     
     private let interactor: MainScreenBusinessLogic
     
-    let mainTitle: UILabel = UILabel()
-    let mainDescription: UILabel = UILabel()
+    private let mainTitle: UILabel = UILabel()
+    private let mainDescription: UILabel = UILabel()
     
-    let segmentedControl = UISegmentedControl()
+    private let segmentedControl = UISegmentedControl()
     
     // Color controllers
     private let rgbSlider: CustomRGBSlider = CustomRGBSlider()
     private let textField: CustomTextField = CustomTextField(placeholder: Constants.textFieldPlaceholder)
     private let randomButton: UIButton = UIButton(type: .system)
+    
+    private let addWishButton: UIButton = UIButton(type: .system)
     
     // MARK: - Initialisers
     
@@ -86,6 +96,7 @@ final class MainScreenViewController: UIViewController {
         configureTextField()
         configureRandomButton()
         configureSegmentedControl()
+        configureAddWishButton()
     }
     
     // MARK: - Configure Title
@@ -159,6 +170,8 @@ final class MainScreenViewController: UIViewController {
             self.interactor.loadChangeColor(.textField(hex: hex))
         }
         
+        textField.layer.cornerRadius = Constants.textFieldCornerRadius
+        textField.clipsToBounds = true
         textField.translatesAutoresizingMaskIntoConstraints = false;
         view.addSubview(textField)
         NSLayoutConstraint.activate([
@@ -176,6 +189,7 @@ final class MainScreenViewController: UIViewController {
         randomButton.backgroundColor = .orange
         randomButton.setTitle(Constants.randomButtonTitle, for: .normal)
         randomButton.setTitleColor(.white, for: .normal)
+        randomButton.layer.cornerRadius = Constants.randomButtonCornerRadius
         randomButton.translatesAutoresizingMaskIntoConstraints = false;
         
         view.addSubview(randomButton)
@@ -210,7 +224,27 @@ final class MainScreenViewController: UIViewController {
         NSLayoutConstraint.activate([
             segmentedControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             segmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.segmentedControlLeading),
-            segmentedControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.segmentedControlBottom)
+            segmentedControl.topAnchor.constraint(equalTo: rgbSlider.bottomAnchor, constant: Constants.segmentedControlTop)
+        ])
+    }
+    
+    // MARK: Configure add wish button
+    
+    private func configureAddWishButton() {
+        addWishButton.backgroundColor = .orange
+        addWishButton.tintColor = .white
+        addWishButton.setTitle(Constants.addWishButtonTitle, for: .normal)
+        addWishButton.layer.cornerRadius = Constants.addWishButtonCornerRadius
+        addWishButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        addWishButton.addTarget(self, action: #selector(addWishButtonTapped), for: .touchDown)
+        
+        view.addSubview(addWishButton)
+        NSLayoutConstraint.activate([
+            addWishButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            addWishButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.addWishButtonLeading),
+            addWishButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Constants.addWishButtonBottom),
+            addWishButton.heightAnchor.constraint(equalToConstant: Constants.addWishButtonHeight)
         ])
     }
     
@@ -244,6 +278,13 @@ final class MainScreenViewController: UIViewController {
     @objc
     private func segmentControlTapped() {
         interactor.loadChangeColorController(Model.ChangeColorController.Request(index: segmentedControl.selectedSegmentIndex))
+    }
+    
+    // MARK: - Add wish button tapped
+    
+    @objc
+    private func addWishButtonTapped() {
+        interactor.loadChangeToWishTableScreen(Model.ChangeToWishTableScreen.Request())
     }
     
     // MARK: - Dismiss Keyboard

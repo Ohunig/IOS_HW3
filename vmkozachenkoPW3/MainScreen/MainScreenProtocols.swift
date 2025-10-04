@@ -10,6 +10,8 @@ protocol MainScreenBusinessLogic {
     func loadChangeColor(_ request: Model.ChangeColor.Request)
     
     func loadChangeColorController(_ request: Model.ChangeColorController.Request)
+    
+    func loadChangeToWishTableScreen(_ request: Model.ChangeToWishTableScreen.Request)
 }
 
 // MARK: - Presentation logic
@@ -22,4 +24,6 @@ protocol MainScreenPresentationLogic {
     func presentChangeColor(_ response: Model.ChangeColor.Response)
     
     func presentChangeColorController(_ response: Model.ChangeColorController.Response)
+    
+    func changeToWishTableScreen(_ response: Model.ChangeToWishTableScreen.Response)
 }

@@ -22,7 +22,7 @@ final class MainScreenInteractor: MainScreenBusinessLogic {
     
     private let presenter: MainScreenPresentationLogic
     
-    private var colorService: ColorServiceProtocol
+    private let colorService: ColorServiceProtocol
     
     private var colorController: ColorControllerType
     
@@ -51,16 +51,16 @@ final class MainScreenInteractor: MainScreenBusinessLogic {
             let g = min(max(green / Constants.maxColorValue, Constants.minValue), Constants.maxValue)
             let b = min(max(blue / Constants.maxColorValue, Constants.minValue), Constants.maxValue)
             // set color
-            colorService.color = ColorModel(red: r, green: g, blue: b)
+            colorService.setColor(color: ColorModel(red: r, green: g, blue: b))
             
         case .randomButton:
             // set color
-            colorService.color = ColorModel(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1))
+            colorService.setColor(color: ColorModel(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1)))
             
         case let .textField(hex):
             guard ColorModel.validateHEX(hex: hex) else { return }
             // set color
-            colorService.color = ColorModel(hex: hex)
+            colorService.setColor(color: ColorModel(hex: hex))
         }
         
         presenter.presentChangeColor(Model.ChangeColor.Response(color: colorService.color))
@@ -83,5 +83,11 @@ final class MainScreenInteractor: MainScreenBusinessLogic {
         case .randomButton: .randomButton
         }
         presenter.presentChangeColorController(response)
+    }
+    
+    // MARK: - Load wish table screen
+    
+    func loadChangeToWishTableScreen(_ request: Model.ChangeToWishTableScreen.Request) {
+        presenter.changeToWishTableScreen(Model.ChangeToWishTableScreen.Response(colorService: colorService))
     }
 }

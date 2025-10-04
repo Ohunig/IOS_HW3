@@ -30,4 +30,11 @@ final class MainScreenPresenter: MainScreenPresentationLogic {
         }
         view?.displayChangeColorController(Model.ChangeColorController.ViewModel(showSlider: showSlider, showTextField: showTextField, showRandomButton: showRandomButton))
     }
+    
+    // MARK: - Change to wish table screen
+    
+    func changeToWishTableScreen(_ response: Model.ChangeToWishTableScreen.Response) {
+        let params = WishTableScreenParamsModel(colorService: response.colorService)
+        view?.present(WishTableScreenAssembly.build(params: params), animated: true)
+    }
 }

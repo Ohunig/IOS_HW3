@@ -2,6 +2,8 @@ import Foundation
 
 enum MainScreenModel {
     
+    // MARK: - Start
+    
     enum Start {
         struct Request { }
         struct Response {
@@ -13,6 +15,8 @@ enum MainScreenModel {
             let blue: CGFloat
         }
     }
+    
+    // MARK: - Change color
     
     enum ChangeColor {
         enum Request {
@@ -30,6 +34,8 @@ enum MainScreenModel {
         }
     }
     
+    // MARK: - Change color controller
+    
     enum ChangeColorController {
         struct Request {
             let index: Int
@@ -43,6 +49,15 @@ enum MainScreenModel {
             let showSlider: Bool
             let showTextField: Bool
             let showRandomButton: Bool
+        }
+    }
+    
+    // MARK: - Change to wish table screen
+    
+    enum ChangeToWishTableScreen {
+        struct Request {}
+        struct Response {
+            let colorService: ColorServiceProtocol
         }
     }
 }
