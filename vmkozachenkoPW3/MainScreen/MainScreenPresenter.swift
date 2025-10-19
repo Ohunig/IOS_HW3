@@ -1,25 +1,39 @@
 import Foundation
 
 final class MainScreenPresenter: MainScreenPresentationLogic {
-    
+
     // MARK: - Fields
     weak var view: MainScreenViewController?
-    
+
     // MARK: - Present start
-    
+
     func presentStart(_ response: Model.Start.Response) {
-        view?.displayStart(Model.Start.ViewModel(red: response.color.red, green: response.color.green, blue: response.color.blue))
+        view?.displayStart(
+            Model.Start.ViewModel(
+                red: response.color.red,
+                green: response.color.green,
+                blue: response.color.blue
+            )
+        )
     }
-    
+
     // MARK: - Present change color
-    
+
     func presentChangeColor(_ response: Model.ChangeColor.Response) {
-        view?.displayChangeColor(Model.ChangeColor.ViewModel(red: response.color.red, green: response.color.green, blue: response.color.blue))
+        view?.displayChangeColor(
+            Model.ChangeColor.ViewModel(
+                red: response.color.red,
+                green: response.color.green,
+                blue: response.color.blue
+            )
+        )
     }
-    
+
     // MARK: - Present change clr controller
-    
-    func presentChangeColorController(_ response: Model.ChangeColorController.Response) {
+
+    func presentChangeColorController(
+        _ response: Model.ChangeColorController.Response
+    ) {
         var showSlider: Bool = false
         var showTextField: Bool = false
         var showRandomButton: Bool = false
@@ -28,13 +42,20 @@ final class MainScreenPresenter: MainScreenPresentationLogic {
         case .textField: showTextField = true
         case .randomButton: showRandomButton = true
         }
-        view?.displayChangeColorController(Model.ChangeColorController.ViewModel(showSlider: showSlider, showTextField: showTextField, showRandomButton: showRandomButton))
+        view?.displayChangeColorController(
+            Model.ChangeColorController.ViewModel(
+                showSlider: showSlider,
+                showTextField: showTextField,
+                showRandomButton: showRandomButton
+            )
+        )
     }
-    
+
     // MARK: - Change to wish table screen
-    
-    func changeToWishTableScreen(_ response: Model.ChangeToWishTableScreen.Response) {
-        let params = WishTableScreenParamsModel(colorService: response.colorService)
-        view?.present(WishTableScreenAssembly.build(params: params), animated: true)
+
+    func changeToWishTableScreen(
+        _ response: Model.ChangeToWishTableScreen.Response
+    ) {
+        view?.present(WishTableScreenAssembly.build(), animated: true)
     }
 }

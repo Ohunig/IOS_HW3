@@ -16,4 +16,18 @@ enum WishTableScreenModel {
         }
     }
     
+    // MARK: - Update wishes
+    
+    enum UpdateWishes {
+        enum Request {
+            case update
+            case add(String)
+        }
+        struct Response {
+            let wishes: [String?]
+        }
+        struct ViewModel {
+            let wishes: [String]
+        }
+    }
 }

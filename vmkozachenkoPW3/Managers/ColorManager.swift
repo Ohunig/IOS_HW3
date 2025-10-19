@@ -1,16 +1,16 @@
 import Foundation
 
-// MARK: - Color service protocol
+// MARK: - Color manager protocol
 
-protocol ColorServiceProtocol {
+protocol ColorManagerProtocol {
     var color: ColorModel { get }
     
     func setColor(color: ColorModel)
 }
 
-// MARK: - Color service
+// MARK: - Color manager
 
-final class ColorService: ColorServiceProtocol {
+final class ColorManager: ColorManagerProtocol {
     
     // MARK: - Constants
     
@@ -20,7 +20,13 @@ final class ColorService: ColorServiceProtocol {
     
     // MARK: - Fields
     
+    static let shared: ColorManagerProtocol = ColorManager()
+    
     var color: ColorModel = .init(hex: Constants.startColor)
+    
+    // MARK: - Inits
+    
+    private init() {}
     
     // MARK: - Set color
     

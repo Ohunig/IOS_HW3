@@ -1,14 +1,19 @@
 import Foundation
 
 enum WishTableScreenAssembly {
-    
-    static func build(params: WishTableScreenParamsModel) -> WishStoringViewController {
+
+    static func build() -> WishStoringViewController {
         let presenter: WishTableScreenPresenter = WishTableScreenPresenter()
-        let interactor: WishTableScreenInteractor = WishTableScreenInteractor(presenter: presenter, params: params)
-        let viewController: WishStoringViewController = WishStoringViewController(interactor: interactor)
-        
+        let interactor: WishTableScreenInteractor = WishTableScreenInteractor(
+            presenter: presenter,
+            colorManager: ColorManager.shared,
+            wishManager: WishStoringManager.shared
+        )
+        let viewController: WishStoringViewController =
+            WishStoringViewController(interactor: interactor)
+
         presenter.view = viewController
-        
+
         return viewController
     }
 }
