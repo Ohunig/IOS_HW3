@@ -42,8 +42,7 @@ final class AddWishCell: UITableViewCell {
             action: #selector(buttonWasPressed),
             for: .touchDown
         )
-        self.isUserInteractionEnabled = true
-        textField.isUserInteractionEnabled = true
+        
         contentView.isUserInteractionEnabled = true
 
         configureUI()
@@ -132,5 +131,6 @@ final class AddWishCell: UITableViewCell {
     @objc
     func buttonWasPressed() {
         buttonPressed?(textField.text ?? "")
+        textField.text = ""
     }
 }

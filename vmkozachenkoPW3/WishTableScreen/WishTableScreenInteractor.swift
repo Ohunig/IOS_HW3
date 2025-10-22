@@ -25,6 +25,7 @@ final class WishTableScreenInteractor: WishTableScreenBusinessLogic {
     // MARK: - Load start
 
     func loadStart(_ request: Model.Start.Request) {
+        wishManager.start()
         presenter.presentStart(Model.Start.Response(color: colorManager.color))
     }
 
@@ -35,9 +36,11 @@ final class WishTableScreenInteractor: WishTableScreenBusinessLogic {
             if !wish.isEmpty {
                 wishManager.addWish(wish: wish)
             }
+        } else if case .delete(let index) = request {
+            wishManager.deleteWish(index: index)
         }
-        var resp: [String?] = Array(repeating: "", count: wishManager.сount)
-        for i in 0..<wishManager.сount {
+        var resp: [String?] = Array(repeating: "", count: wishManager.count)
+        for i in 0..<wishManager.count {
             resp[i] = wishManager.getWishById(id: i)
         }
         presenter.presentUpdateWishes(Model.UpdateWishes.Response(wishes: resp))

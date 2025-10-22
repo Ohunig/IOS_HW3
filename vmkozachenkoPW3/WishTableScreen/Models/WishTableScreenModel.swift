@@ -22,6 +22,7 @@ enum WishTableScreenModel {
         enum Request {
             case update
             case add(String)
+            case delete(Int)
         }
         struct Response {
             let wishes: [String?]

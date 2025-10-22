@@ -17,18 +17,28 @@ final class WrittenWishCell: UITableViewCell {
         static let wrapOffsetH: CGFloat = 8
 
         static let wishLabelOffset: CGFloat = 18
+
+        static let menuButtonWidth: CGFloat = 30
     }
 
     // MARK: - Fields
 
     static let reuseId: String = "WrittenWishCell"
 
+    private let wrap: UIView = UIView()
+
     private let wishLabel: UILabel = UILabel()
+
+    private let menuButton: UIButton = UIButton(type: .system)
+
+    var onDeleteTapped: (() -> Void)?
 
     // MARK: - Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        contentView.isUserInteractionEnabled = true
 
         configureUI()
     }
@@ -50,11 +60,18 @@ final class WrittenWishCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = .clear
 
-        // Wrap configuring
-        let wrap: UIView = UIView()
+        configureWrap()
+        configureMenuButton()
+        configureWishLabel()
+    }
+
+    // MARK: - Configure Wrap
+
+    private func configureWrap() {
         wrap.backgroundColor = Constants.wrapColor
         wrap.layer.cornerRadius = Constants.wrapRadius
 
+        // Add to self subwiews
         wrap.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(wrap)
 
@@ -70,18 +87,68 @@ final class WrittenWishCell: UITableViewCell {
                 constant: -Constants.wrapOffsetV
             ),
         ])
+    }
 
-        // Wish label configuring
+    // MARK: - Configure Menu Button
+
+    private func configureMenuButton() {
+        // Add image, color of text
+        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        menuButton.tintColor = .black
+
+        // Add to wrap subwiews
+        menuButton.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(menuButton)
+
+        NSLayoutConstraint.activate([
+            menuButton.trailingAnchor.constraint(
+                equalTo: wrap.trailingAnchor,
+                constant: -Constants.wishLabelOffset
+            ),
+            menuButton.centerYAnchor.constraint(equalTo: wrap.centerYAnchor),
+            menuButton.topAnchor.constraint(
+                equalTo: wrap.topAnchor,
+                constant: Constants.wishLabelOffset
+            ),
+            menuButton.widthAnchor.constraint(
+                equalToConstant: Constants.menuButtonWidth
+            ),
+        ])
+
+        // Add menu
+        let menu = UIMenu(children: [
+            // Delete action
+            UIAction(
+                title: "Delete",
+                image: UIImage(systemName: "trash"),
+                attributes: .destructive
+            ) { [weak self] _ in
+                self?.onDeleteTapped?()
+            }
+        ])
+        
+        // Set menu to menuButton
+        menuButton.menu = menu
+        menuButton.showsMenuAsPrimaryAction = true
+    }
+
+    // MARK: - Configure Wish Label
+
+    private func configureWishLabel() {
         wishLabel.textColor = .black
+
+        // Add to wrap subwiews
         wishLabel.translatesAutoresizingMaskIntoConstraints = false
         wrap.addSubview(wishLabel)
 
         NSLayoutConstraint.activate([
-            wishLabel.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
             wishLabel.centerYAnchor.constraint(equalTo: wrap.centerYAnchor),
             wishLabel.leadingAnchor.constraint(
                 equalTo: wrap.leadingAnchor,
                 constant: Constants.wishLabelOffset
+            ),
+            wishLabel.trailingAnchor.constraint(
+                equalTo: menuButton.leadingAnchor
             ),
             wishLabel.topAnchor.constraint(
                 equalTo: wrap.topAnchor,

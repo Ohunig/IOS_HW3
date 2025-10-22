@@ -72,7 +72,8 @@ final class WishStoringViewController: UIViewController {
         table.isUserInteractionEnabled = true
         table.delaysContentTouches = false
         table.showsVerticalScrollIndicator = false
-
+        
+        // Set style
         table.backgroundColor = .white
         table.separatorStyle = .none
         table.layer.cornerRadius = Constants.tableCornerRadius
@@ -141,7 +142,8 @@ extension WishStoringViewController: UITableViewDataSource {
             guard let addCell = cell as? AddWishCell else {
                 return cell
             }
-
+            
+            // Add action to button
             addCell.buttonPressed = { [weak self] wish in
                 self?.dismissKeyboard()
                 self?.interactor.loadUpdateWishes(.add(wish))
@@ -155,8 +157,12 @@ extension WishStoringViewController: UITableViewDataSource {
             guard let wishCell = cell as? WrittenWishCell else {
                 return cell
             }
-
             wishCell.configure(with: wishes[indexPath.row])
+            
+            // Add action to delete button
+            wishCell.onDeleteTapped = { [weak self] in
+                self?.interactor.loadUpdateWishes(.delete(indexPath.row))
+            }
 
             return wishCell
         default:
