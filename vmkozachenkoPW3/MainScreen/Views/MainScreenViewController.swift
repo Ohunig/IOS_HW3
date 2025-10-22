@@ -84,7 +84,7 @@ final class MainScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         interactor.loadStart(Model.Start.Request())
         view.addGestureRecognizer(
             UITapGestureRecognizer(
@@ -93,6 +93,14 @@ final class MainScreenViewController: UIViewController {
             )
         )
         configureUI()
+    }
+    
+    // MARK: - view Is Appearing
+    
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        // Hide Nav bar
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     // MARK: - Configure UI

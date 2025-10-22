@@ -8,6 +8,8 @@ protocol WishStoringLogic {
     func start()
 
     func getWishById(id: Int) -> String?
+    
+    func setWishTo(id: Int, wish: String)
 
     func addWish(wish: String)
     
@@ -47,6 +49,12 @@ final class WishStoringManager: WishStoringLogic {
     func getWishById(id: Int) -> String? {
         guard id >= 0 && id < wishes.count else { return nil }
         return wishes[id]
+    }
+    
+    func setWishTo(id: Int, wish: String) {
+        guard id >= 0 && id < wishes.count else { return }
+        wishes[id] = wish
+        defaults.set(wishes, forKey: Constants.wishesKey)
     }
     
     func addWish(wish: String) {

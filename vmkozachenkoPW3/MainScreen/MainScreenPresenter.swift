@@ -56,6 +56,9 @@ final class MainScreenPresenter: MainScreenPresentationLogic {
     func changeToWishTableScreen(
         _ response: Model.ChangeToWishTableScreen.Response
     ) {
-        view?.present(WishTableScreenAssembly.build(), animated: true)
+        view?.navigationController?.pushViewController(
+            WishTableScreenAssembly.build(),
+            animated: true
+        )
     }
 }

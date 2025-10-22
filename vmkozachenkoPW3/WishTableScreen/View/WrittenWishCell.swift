@@ -33,6 +33,8 @@ final class WrittenWishCell: UITableViewCell {
 
     var onDeleteTapped: (() -> Void)?
 
+    var onEditTapped: (() -> Void)?
+
     // MARK: - Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -117,6 +119,14 @@ final class WrittenWishCell: UITableViewCell {
 
         // Add menu
         let menu = UIMenu(children: [
+            // Edit action
+            UIAction(
+                title: "Edit",
+                image: UIImage(systemName: "pencil")
+            ) {
+                [weak self] _ in
+                self?.onEditTapped?()
+            },
             // Delete action
             UIAction(
                 title: "Delete",
@@ -124,9 +134,9 @@ final class WrittenWishCell: UITableViewCell {
                 attributes: .destructive
             ) { [weak self] _ in
                 self?.onDeleteTapped?()
-            }
+            },
         ])
-        
+
         // Set menu to menuButton
         menuButton.menu = menu
         menuButton.showsMenuAsPrimaryAction = true
@@ -136,6 +146,7 @@ final class WrittenWishCell: UITableViewCell {
 
     private func configureWishLabel() {
         wishLabel.textColor = .black
+        wishLabel.numberOfLines = 0
 
         // Add to wrap subwiews
         wishLabel.translatesAutoresizingMaskIntoConstraints = false

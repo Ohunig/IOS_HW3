@@ -38,6 +38,10 @@ final class WishTableScreenInteractor: WishTableScreenBusinessLogic {
             }
         } else if case .delete(let index) = request {
             wishManager.deleteWish(index: index)
+        } else if case .edit(let index, let wish) = request {
+            if !wish.isEmpty {
+                wishManager.setWishTo(id: index, wish: wish)
+            }
         }
         var resp: [String?] = Array(repeating: "", count: wishManager.count)
         for i in 0..<wishManager.count {

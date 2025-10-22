@@ -10,7 +10,7 @@ final class WishStoringViewController: UIViewController {
         static let fatalTableError = "Invalid section number"
 
         static let tableCornerRadius: CGFloat = 12
-        static let tableTop: CGFloat = 40
+        static let tableTop: CGFloat = 20
         static let tableLeading: CGFloat = 20
         static let tableBottom: CGFloat = -50
 
@@ -53,7 +53,29 @@ final class WishStoringViewController: UIViewController {
     // MARK: - Configure UI
 
     private func configureUI() {
+        configureNavigationBar()
         configureTable()
+    }
+
+    // MARK: - Configure Navigation Bar
+
+    private func configureNavigationBar() {
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.tintColor = .orange
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "Back",
+            style: .done,
+            target: self,
+            action: #selector(backTapped)
+        )
     }
 
     // MARK: - Configure table
@@ -72,7 +94,7 @@ final class WishStoringViewController: UIViewController {
         table.isUserInteractionEnabled = true
         table.delaysContentTouches = false
         table.showsVerticalScrollIndicator = false
-        
+
         // Set style
         table.backgroundColor = .white
         table.separatorStyle = .none
@@ -117,6 +139,9 @@ final class WishStoringViewController: UIViewController {
 // MARK: - Extention to UITableViewDataSource
 
 extension WishStoringViewController: UITableViewDataSource {
+
+    // MARK: - Get count of cells in section
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int)
         -> Int
     {
@@ -130,6 +155,8 @@ extension WishStoringViewController: UITableViewDataSource {
         }
     }
 
+    // MARK: - Get Table Cell
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
         -> UITableViewCell
     {
@@ -142,7 +169,7 @@ extension WishStoringViewController: UITableViewDataSource {
             guard let addCell = cell as? AddWishCell else {
                 return cell
             }
-            
+
             // Add action to button
             addCell.buttonPressed = { [weak self] wish in
                 self?.dismissKeyboard()
@@ -158,10 +185,52 @@ extension WishStoringViewController: UITableViewDataSource {
                 return cell
             }
             wishCell.configure(with: wishes[indexPath.row])
-            
+
             // Add action to delete button
             wishCell.onDeleteTapped = { [weak self] in
                 self?.interactor.loadUpdateWishes(.delete(indexPath.row))
+            }
+
+            // Add action to edit button
+            wishCell.onEditTapped = { [weak self] in
+                let alert = UIAlertController(
+                    title: "Edit Wish",
+                    message: "Change your wish",
+                    preferredStyle: .alert
+                )
+
+                // Add text field
+                alert.addTextField { textField in
+                    textField.text = self?.wishes[indexPath.row]
+                    textField.placeholder = "Enter your wish"
+                }
+
+                // Add save action
+                let saveAction = UIAlertAction(title: "Save", style: .default) {
+                    [weak self] _ in
+                    guard let textField = alert.textFields?.first,
+                        let newText = textField.text,
+                        !newText.isEmpty
+                    else {
+                        return
+                    }
+
+                    // Update data
+                    self?.interactor.loadUpdateWishes(
+                        .edit(indexPath.row, newText)
+                    )
+                }
+
+                // Cancel button
+                let cancelAction = UIAlertAction(
+                    title: "Cancel",
+                    style: .cancel
+                )
+
+                alert.addAction(saveAction)
+                alert.addAction(cancelAction)
+
+                self?.present(alert, animated: true)
             }
 
             return wishCell
@@ -170,10 +239,17 @@ extension WishStoringViewController: UITableViewDataSource {
         }
     }
 
-    // MARK: Number of sections
+    // MARK: - Number Of Section
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return Constants.countOfSections
+    }
+
+    // MARK: - Back Tapped
+
+    @objc
+    private func backTapped() {
+        navigationController?.popViewController(animated: true)
     }
 
     // MARK: - Dismiss Keyboard
