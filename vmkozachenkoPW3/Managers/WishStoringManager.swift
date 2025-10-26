@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 // MARK: - Wish storing logic
 
@@ -24,15 +25,17 @@ final class WishStoringManager: WishStoringLogic {
     
     private enum Constants {
         static let wishesKey: String = "wishes"
+        
+        static let saveError: String = "Save error"
     }
 
     // MARK: Fields
 
     static let shared: WishStoringLogic = WishStoringManager()
 
-    private var wishes: [String] = []
+    private var wishes: [Wish] = []
 
-    private let defaults = UserDefaults.standard
+    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     var count: Int { wishes.count }
 
@@ -43,29 +46,55 @@ final class WishStoringManager: WishStoringLogic {
     // MARK: Behaviour
     
     func start() {
-        wishes = defaults.array(forKey: Constants.wishesKey) as? [String] ?? []
+        do {
+            try wishes = context.fetch(Wish.fetchRequest())
+        }
+        catch {
+            wishes = []
+        }
     }
 
     func getWishById(id: Int) -> String? {
         guard id >= 0 && id < wishes.count else { return nil }
-        return wishes[id]
+        return wishes[id].message
     }
     
     func setWishTo(id: Int, wish: String) {
         guard id >= 0 && id < wishes.count else { return }
-        wishes[id] = wish
-        defaults.set(wishes, forKey: Constants.wishesKey)
+        wishes[id].message = wish
+        // Save
+        do {
+            try context.save()
+        }
+        catch {
+            print(Constants.saveError)
+        }
     }
     
     func addWish(wish: String) {
-        wishes.append(wish)
-        defaults.set(wishes, forKey: Constants.wishesKey)
+        let newWish: Wish = Wish(context: context)
+        newWish.message = wish
+        wishes.append(newWish)
+        // Save
+        do {
+            try context.save()
+        }
+        catch {
+            print(Constants.saveError)
+        }
     }
     
     func deleteWish(index: Int) {
         if (index >= 0 && index < count) {
+            context.delete(wishes[index])
             wishes.remove(at: index)
         }
-        defaults.set(wishes, forKey: Constants.wishesKey)
+        // Save
+        do {
+            try context.save()
+        }
+        catch {
+            print(Constants.saveError)
+        }
     }
 }
